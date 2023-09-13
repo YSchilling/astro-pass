@@ -1,5 +1,5 @@
 use app::App;
-use crossterm::event::{self, DisableMouseCapture, EnableMouseCapture};
+use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
 use crossterm::execute;
 use crossterm::terminal::{
     disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen,
@@ -8,7 +8,6 @@ use crossterm::terminal::{
 use ratatui::{prelude::CrosstermBackend, Terminal};
 use std::error::Error;
 use std::io::stdout;
-use std::thread;
 
 mod app;
 mod constants;

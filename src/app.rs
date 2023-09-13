@@ -2,13 +2,13 @@ use std::{error::Error, io::Stdout};
 
 use crossterm::event::{self, Event, KeyCode, KeyEventKind};
 use ratatui::prelude::*;
+use ratatui::widgets::{BorderType, Paragraph};
 use ratatui::{
     style::{Color, Modifier, Style},
     widgets::{Block, Borders, List, ListItem},
     Terminal,
 };
 
-use crate::main;
 use crate::{
     database::{Database, Password},
     widgets::StatefulList,
@@ -57,16 +57,41 @@ impl App {
         terminal: &mut Terminal<CrosstermBackend<Stdout>>,
     ) -> Result<(), Box<dyn Error>> {
         terminal.draw(|f| {
-            // Layout
+            // Main Layout
             let main_layout = Layout::default()
                 .direction(Direction::Horizontal)
                 .constraints(vec![Constraint::Percentage(50), Constraint::Percentage(50)])
                 .split(f.size());
 
             // Menu
-            let block = Block::default().title("Menu").borders(Borders::ALL);
+            let menu_block = Block::default().title("Menu").borders(Borders::ALL);
+            f.render_widget(menu_block, main_layout[0]);
 
-            f.render_widget(block, main_layout[0]);
+            let menu_layout = Layout::default()
+                .direction(Direction::Vertical)
+                .margin(2)
+                .constraints(vec![
+                    Constraint::Min(0),
+                    Constraint::Length(3),
+                    Constraint::Length(3),
+                ])
+                .split(main_layout[0]);
+
+            // Username Field
+            let username_block = Block::default()
+                .title("Username")
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded);
+            let username_paragraph = Paragraph::new("").block(username_block.clone());
+            f.render_widget(username_paragraph, menu_layout[1]);
+
+            // Password Field
+            let password_block = Block::default()
+                .title("Password")
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded);
+            let password_paragraph = Paragraph::new("").block(password_block);
+            f.render_widget(password_paragraph, menu_layout[2]);
 
             // Password List
             let list_items: Vec<ListItem> = self

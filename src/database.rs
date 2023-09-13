@@ -61,17 +61,6 @@ impl Database {
         self.save_to_file();
     }
 
-    pub fn update_password(&mut self, name: String, new_password: Password) {
-        for i in 0..self.passwords.len() {
-            if self.passwords[i].name == name {
-                self.passwords[i] = new_password;
-                break;
-            }
-        }
-
-        self.save_to_file();
-    }
-
     pub fn delete_password(&mut self, id: u32) {
         for i in 0..self.passwords.len() {
             if self.passwords[i].id == id {
