@@ -1,0 +1,1 @@
+/mnt/data/dev/github/astro-pass/target/debug/astro-pass: /mnt/data/dev/github/astro-pass/src/app.rs /mnt/data/dev/github/astro-pass/src/constants.rs /mnt/data/dev/github/astro-pass/src/database.rs /mnt/data/dev/github/astro-pass/src/main.rs /mnt/data/dev/github/astro-pass/src/widgets.rs
