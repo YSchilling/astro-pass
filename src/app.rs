@@ -8,7 +8,10 @@ use ratatui::{
     Terminal,
 };
 
-use crate::{database::Database, widgets::StatefulList};
+use crate::{
+    database::{Database, Password},
+    widgets::StatefulList,
+};
 
 pub struct App {
     db: Database,
@@ -17,7 +20,7 @@ pub struct App {
 
 impl App {
     pub fn new() -> Self {
-        let db = Database::new();
+        let db = Database::load_from_file();
         let stateful_list = StatefulList::new();
 
         Self { db, stateful_list }
@@ -34,6 +37,8 @@ impl App {
                 if key.kind == KeyEventKind::Press {
                     match key.code {
                         KeyCode::Char('q') => break 'app_loop,
+                        KeyCode::Char('c') => self.create_password(),
+                        KeyCode::Char('d') => self.delete_password(),
                         KeyCode::Down => self.stateful_list.next(&self.db.passwords),
                         KeyCode::Up => self.stateful_list.previous(&self.db.passwords),
                         KeyCode::Left => self.stateful_list.unselect(),
@@ -72,5 +77,25 @@ impl App {
         })?;
 
         Ok(())
+    }
+
+    fn create_password(&mut self) {
+        let id = self.db.id_counter;
+        self.db.id_counter += 1;
+        let test_password = Password::new(id, "TestName".to_string(), "TestContent".to_string());
+        self.db.create_password(test_password);
+    }
+
+    fn delete_password(&mut self) {
+        let selected = match self.stateful_list.state.selected() {
+            None => return,
+            Some(i) => i,
+        };
+        let password = self.db.passwords.iter().nth(selected);
+        let id = match password {
+            None => panic!("Selected index doesn't match database!"),
+            Some(pw) => pw.id,
+        };
+        self.db.delete_password(id as u32);
     }
 }
