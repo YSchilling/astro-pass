@@ -8,10 +8,7 @@ use ratatui::{
     Terminal,
 };
 
-use crate::{
-    database::{Database, Password},
-    widgets::StatefulList,
-};
+use crate::{database::Database, widgets::StatefulList};
 
 pub struct App {
     db: Database,
@@ -21,12 +18,7 @@ pub struct App {
 impl App {
     pub fn new() -> Self {
         let db = Database::new();
-        let passwords = vec![
-            Password::new("Name1".to_string(), "PW1".to_string()),
-            Password::new("Name2".to_string(), "PW2".to_string()),
-            Password::new("Name3".to_string(), "PW3".to_string()),
-        ];
-        let stateful_list = StatefulList::with_items(passwords);
+        let stateful_list = StatefulList::new();
 
         Self { db, stateful_list }
     }
@@ -42,8 +34,8 @@ impl App {
                 if key.kind == KeyEventKind::Press {
                     match key.code {
                         KeyCode::Char('q') => break 'app_loop,
-                        KeyCode::Down => self.stateful_list.next(),
-                        KeyCode::Up => self.stateful_list.previous(),
+                        KeyCode::Down => self.stateful_list.next(&self.db.passwords),
+                        KeyCode::Up => self.stateful_list.previous(&self.db.passwords),
                         KeyCode::Left => self.stateful_list.unselect(),
                         _ => {}
                     }
@@ -64,8 +56,8 @@ impl App {
             let block = Block::default().title("Passwords").borders(Borders::ALL);
 
             let items: Vec<ListItem> = self
-                .stateful_list
-                .items
+                .db
+                .passwords
                 .iter()
                 .map(|pw| ListItem::new(format!("{pw:?}")))
                 .collect();

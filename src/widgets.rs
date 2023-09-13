@@ -4,22 +4,20 @@ use crate::database::Password;
 
 pub struct StatefulList {
     pub state: ListState,
-    pub items: Vec<Password>,
 }
 
 impl StatefulList {
-    pub fn with_items(items: Vec<Password>) -> StatefulList {
+    pub fn new() -> StatefulList {
         StatefulList {
             state: ListState::default(),
-            items,
         }
     }
 
-    pub fn next(&mut self) {
+    pub fn next(&mut self, items: &Vec<Password>) {
         let i = match self.state.selected() {
             None => 0,
             Some(i) => {
-                if i >= self.items.len() - 1 {
+                if i >= items.len() - 1 {
                     0
                 } else {
                     i + 1
@@ -29,12 +27,12 @@ impl StatefulList {
         self.state.select(Some(i));
     }
 
-    pub fn previous(&mut self) {
+    pub fn previous(&mut self, items: &Vec<Password>) {
         let i = match self.state.selected() {
             None => 0,
             Some(i) => {
                 if i == 0 {
-                    self.items.len() - 1
+                    items.len() - 1
                 } else {
                     i - 1
                 }
