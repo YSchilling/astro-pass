@@ -1,13 +1,14 @@
 use std::{error::Error, io::Stdout};
 
 use crossterm::event::{self, Event, KeyCode, KeyEventKind};
+use ratatui::prelude::*;
 use ratatui::{
-    prelude::CrosstermBackend,
     style::{Color, Modifier, Style},
     widgets::{Block, Borders, List, ListItem},
     Terminal,
 };
 
+use crate::main;
 use crate::{
     database::{Database, Password},
     widgets::StatefulList,
@@ -56,24 +57,32 @@ impl App {
         terminal: &mut Terminal<CrosstermBackend<Stdout>>,
     ) -> Result<(), Box<dyn Error>> {
         terminal.draw(|f| {
-            //Layout
+            // Layout
+            let main_layout = Layout::default()
+                .direction(Direction::Horizontal)
+                .constraints(vec![Constraint::Percentage(50), Constraint::Percentage(50)])
+                .split(f.size());
 
-            let block = Block::default().title("Passwords").borders(Borders::ALL);
+            // Menu
+            let block = Block::default().title("Menu").borders(Borders::ALL);
 
-            let items: Vec<ListItem> = self
+            f.render_widget(block, main_layout[0]);
+
+            // Password List
+            let list_items: Vec<ListItem> = self
                 .db
                 .passwords
                 .iter()
                 .map(|pw| ListItem::new(format!("{pw:?}")))
                 .collect();
-
-            let list = List::new(items)
-                .block(block)
+            let list_block = Block::default().title("Passwords").borders(Borders::ALL);
+            let password_list = List::new(list_items)
+                .block(list_block)
                 .style(Style::default().fg(Color::White))
                 .highlight_style(Style::default().add_modifier(Modifier::ITALIC))
                 .highlight_symbol(">>");
 
-            f.render_stateful_widget(list, f.size(), &mut self.stateful_list.state);
+            f.render_stateful_widget(password_list, main_layout[1], &mut self.stateful_list.state);
         })?;
 
         Ok(())
